@@ -1,0 +1,160 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+*.iws
+.spyderproject
+.spyproject
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Models (large files - keep structure but ignore models)
+models/*.h5
+models/*.keras
+models/*.pkl
+models/*.pickle
+models/*.joblib
+models/*.pt
+models/*.pth
+models/*.ckpt
+models/*.pb
+models/transfer_learning/*.keras
+
+# Exception: Keep model directory structure
+!models/.gitkeep
+!models/transfer_learning/.gitkeep
+
+# Results (can be regenerated)
+results/*.png
+results/*.jpg
+results/*.pdf
+results/*.csv
+results/*.json
+results/*.npy
+
+# Exception: Keep final comparison
+!results/final_model_comparison.csv
+
+# Dataset files (large, can be re-downloaded)
+datasets/cleveland/processed.cleveland.data
+datasets/cleveland/heart.csv
+datasets/kaggle/*.csv
+datasets/mit-bih/*.dat
+datasets/mit-bih/*.hea
+datasets/mit-bih/*.atr
+
+# Exception: Keep dataset README files
+!datasets/*/README.md
+!datasets/download_datasets.py
+
+# Data directory
+data/*.csv
+data/*.npy
+data/spectrograms/**/*
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# OS files
+Thumbs.db
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+nosetests.xml
+coverage.xml
+*.cover
+.cache
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*_backup
+*_old
+
+# ML/DL specific
+*.tfrecord
+*.tfevents.*
+checkpoint
+mlruns/
+wandb/
+lightning_logs/
+
+# Sensitive
+.env
+.env.local
+*.key
+*.pem
+secrets/
+credentials/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Keep important docs
+!README.md
+!README_*.md
+!PROJECT_FINAL_SUMMARY.md
+!QUICKSTART_FINAL.md
+!LICENSE
+!requirements.txt
