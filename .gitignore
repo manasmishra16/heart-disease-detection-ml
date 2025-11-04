@@ -76,7 +76,8 @@ results/*.npy
 
 # Dataset files (large, can be re-downloaded)
 datasets/cleveland/processed.cleveland.data
-datasets/cleveland/heart.csv
+# Keep Cleveland heart.csv for deployment (it's small - 18KB)
+# datasets/cleveland/heart.csv
 datasets/kaggle/*.csv
 datasets/mit-bih/*.dat
 datasets/mit-bih/*.hea
@@ -85,6 +86,7 @@ datasets/mit-bih/*.atr
 # Exception: Keep dataset README files
 !datasets/*/README.md
 !datasets/download_datasets.py
+!datasets/cleveland/heart.csv
 
 # Data directory
 data/*.csv

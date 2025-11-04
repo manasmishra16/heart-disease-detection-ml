@@ -15,68 +15,73 @@ import os
 if not os.path.exists('models/gradient_boosting_best.pkl'):
     st.info("🔄 First time setup: Training models... This may take 2-3 minutes.")
     
+    # Inline training (more reliable than subprocess on cloud)
     try:
-        # Run training script
-        import subprocess
-        result = subprocess.run(['python', 'train_best_model.py'], 
-                              capture_output=True, text=True, timeout=300)
-        if result.returncode == 0:
-            st.success("✅ Models trained successfully!")
-        else:
-            st.error("❌ Training failed. Using fallback model.")
-    except Exception as e:
-        st.error(f"❌ Setup error: {e}")
-        st.info("Attempting to train inline...")
+        from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.model_selection import train_test_split
+        from imblearn.over_sampling import SMOTE
+        import joblib
         
-        # Inline training as fallback
-        try:
-            from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-            from sklearn.preprocessing import StandardScaler
-            from sklearn.model_selection import train_test_split
-            from imblearn.over_sampling import SMOTE
-            import joblib
-            
-            # Load data
-            df = pd.read_csv('datasets/cleveland/heart.csv')
-            
-            # Prepare data
-            X = df.drop('target', axis=1)
-            y = df['target']
-            
-            # Feature engineering
-            X['age_chol'] = X['age'] * X['chol']
-            X['age_thalach'] = X['age'] * X['thalach']
-            X['cp_thalach'] = X['cp'] * X['thalach']
-            X['oldpeak_slope'] = X['oldpeak'] * X['slope']
-            X['ca_thal'] = X['ca'] * X['thal']
-            X['age_squared'] = X['age'] ** 2
-            X['chol_squared'] = X['chol'] ** 2
-            X['thalach_squared'] = X['thalach'] ** 2
-            
-            # Split and scale
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-            scaler = StandardScaler()
-            X_train_scaled = scaler.fit_transform(X_train)
-            
-            # SMOTE
-            smote = SMOTE(random_state=42)
-            X_train_smote, y_train_smote = smote.fit_resample(X_train_scaled, y_train)
-            
-            # Train model
+        # Find and load data
+        data_paths = [
+            'datasets/cleveland/heart.csv',
+            'heart.csv',
+            'data/heart.csv'
+        ]
+        
+        df = None
+        for path in data_paths:
+            if os.path.exists(path):
+                df = pd.read_csv(path)
+                st.success(f"✅ Found dataset at: {path}")
+                break
+        
+        if df is None:
+            st.error("❌ Dataset not found. Please ensure datasets/cleveland/heart.csv exists.")
+            st.stop()
+        
+        # Prepare data
+        X = df.drop('target', axis=1)
+        y = df['target']
+        
+        # Feature engineering
+        X['age_chol'] = X['age'] * X['chol']
+        X['age_thalach'] = X['age'] * X['thalach']
+        X['cp_thalach'] = X['cp'] * X['thalach']
+        X['oldpeak_slope'] = X['oldpeak'] * X['slope']
+        X['ca_thal'] = X['ca'] * X['thal']
+        X['age_squared'] = X['age'] ** 2
+        X['chol_squared'] = X['chol'] ** 2
+        X['thalach_squared'] = X['thalach'] ** 2
+        
+        # Split and scale
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        
+        # SMOTE
+        smote = SMOTE(random_state=42)
+        X_train_smote, y_train_smote = smote.fit_resample(X_train_scaled, y_train)
+        
+        # Train model
+        with st.spinner("Training Gradient Boosting model..."):
             model = GradientBoostingClassifier(n_estimators=200, learning_rate=0.1, 
                                               max_depth=5, random_state=42)
             model.fit(X_train_smote, y_train_smote)
-            
-            # Save models
-            os.makedirs('models', exist_ok=True)
-            joblib.dump(model, 'models/gradient_boosting_best.pkl')
-            joblib.dump(scaler, 'models/scaler_best.pkl')
-            joblib.dump({'features': X.columns.tolist()}, 'models/ensemble_best_config.pkl')
-            
-            st.success("✅ Models trained and saved!")
-        except Exception as train_error:
-            st.error(f"❌ Inline training failed: {train_error}")
-            st.stop()
+        
+        # Save models
+        os.makedirs('models', exist_ok=True)
+        joblib.dump(model, 'models/gradient_boosting_best.pkl')
+        joblib.dump(scaler, 'models/scaler_best.pkl')
+        joblib.dump({'features': X.columns.tolist()}, 'models/ensemble_best_config.pkl')
+        
+        st.success("✅ Models trained and saved successfully!")
+        st.balloons()
+    except Exception as train_error:
+        st.error(f"❌ Training failed: {train_error}")
+        st.info("Please check the logs for details.")
+        st.stop()
 
 # Now load the regular app
 import joblib
